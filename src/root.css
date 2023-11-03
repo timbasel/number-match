@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 18px;
+  }
+  h1 {
+    @apply text-6xl font-light uppercase mb-4;
+  }
+  h2 {
+    @apply text-4xl font-light mb-4;
+  }
+  h3 {
+    @apply text-2xl font-light mb-4;
+  }
+  p {
+    @apply my-1;
+  }
+}
+
+@layer utilities {
+  .debug {
+    outline: 1px solid red;
+  }
+}

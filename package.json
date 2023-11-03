@@ -1,0 +1,40 @@
+{
+  "name": "number-match",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Tim Basel <tim@basel-berlin.de>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "solid-start dev",
+    "build": "solid-start build",
+    "start": "solid-start start",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "type": "module",
+  "dependencies": {
+    "@solidjs/meta": "^0.28.6",
+    "@solidjs/router": "^0.8.3",
+    "solid-js": "^1.7.11",
+    "solid-mdx": "^0.0.6",
+    "solid-start": "^0.3.5",
+    "tailwind-merge": "^1.14.0"
+  },
+  "devDependencies": {
+    "@mdx-js/rollup": "^2.3.0",
+    "@types/node": "^20.5.9",
+    "autoprefixer": "^10.4.15",
+    "eslint": "^8.48.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-tailwindcss": "^3.13.0",
+    "postcss": "^8.4.28",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.4",
+    "solid-start-node": "^0.3.5",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.9"
+  },
+  "engines": {
+    "node": "20"
+  }
+}
