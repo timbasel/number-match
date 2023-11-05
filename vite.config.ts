@@ -9,15 +9,5 @@ export default defineConfig({
       "@": resolve("./assets/"),
     },
   },
-  plugins: [
-    {
-      ...(await import("@mdx-js/rollup")).default({
-        jsx: true,
-        jsxImportSource: "solid-js/h",
-        providerImportSource: "solid-mdx",
-      }),
-      enforce: "pre",
-    },
-    solid({ ssr: false, extensions: [".md", ".mdx"] }),
-  ],
+  plugins: [solid({ ssr: false })],
 });
