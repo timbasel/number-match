@@ -1,30 +1,17 @@
-# SolidStart
+# Number-Match
 
-Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
+A small puzzle game with a simple rule: Match the numbers. Across rows, diagonals, columns. Everything is possible.
 
-## Creating a project
+## Development
 
-```bash
-# create a new project in the current directory
-npm init solid@latest
-
-# create a new project in my-app
-npm init solid@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+To start development you must have `node` and `yarn` installed. Then navigate into the project folder and run 
 
 ```bash
-npm run dev
+yarn
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+yarn run dev
 ```
 
-## Building
+to install the project dependencies and then start the development server
 
-Solid apps are built with _adapters_, which optimise your project for deployment to different environments.
-
-By default, `npm run build` will generate a Node app that you can run with `npm start`. To use a different adapter, add it to the `devDependencies` in `package.json` and specify in your `vite.config.js`.
+Run `yarn run build` to package the project into a docker container.
