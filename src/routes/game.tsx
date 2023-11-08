@@ -30,7 +30,7 @@ export default function GamePage() {
   });
 
   const init = () => {
-    setGrid(getRandomNumbers(35));
+    setGrid(getRandomHardNumbers(35));
     setMatched(Array.from(new Array(grid.length)).map(() => false));
   };
 
@@ -90,10 +90,16 @@ export default function GamePage() {
       })
       .sort();
 
-    if (rowMatched(index[1])) removeRow(index[1]);
-    if (rowMatched(index[0])) removeRow(index[0]);
+    if (rowMatched(index[1])) {
+      removeRow(index[1]);
+      setScore((score) => score + 10);
+    }
+    if (rowMatched(index[0])) {
+      removeRow(index[0]);
+      setScore((score) => score + 10);
+    }
 
-    if (grid.length === 0) {
+    if (grid.length === 0 || matched.every((matched) => matched)) {
       navigate("/won");
     }
   };
@@ -114,9 +120,12 @@ export default function GamePage() {
     if (s === index) {
       setSelected(undefined);
     } else if (s !== undefined) {
-      const dist = check([s, index]);
+      const indicies: [number, number] = [s, index];
+      indicies.sort((a, b) => a - b);
+
+      const dist = check(indicies);
       if (dist > 0) {
-        match([s, index], dist);
+        match(indicies, dist);
       }
     } else if (!matched[index]) {
       setSelected(index);
@@ -127,7 +136,7 @@ export default function GamePage() {
     const count = matched.reduce((count, matched) => {
       return matched ? count : count + 1;
     }, 0);
-    setGrid([...grid, ...getRandomNumbers(count)]);
+    setGrid([...grid, ...getRandomHardNumbers(count)]);
     setMatched([...matched, ...Array.from(new Array(count)).map(() => false)]);
   };
 
@@ -140,10 +149,17 @@ export default function GamePage() {
       () => availableNumbers[Math.floor(Math.random() * availableNumbers.length)],
     );
   };
+  const getRandomHardNumbers = (count: number) => {
+    return Array.from(new Array(count)).reduce((numbers, _, i) => {
+      const available = availableNumbers.filter((n) => n !== numbers[i - 1]);
+      numbers.push(available[Math.floor(Math.random() * available.length)]);
+      return numbers;
+    }, []) as number[];
+  };
 
   return (
-    <div class="flex h-full w-full select-none flex-col items-center justify-center p-4">
-      <div class="flex w-full max-w-screen-md flex-col items-center gap-4">
+    <div class="flex h-full w-full select-none flex-col items-center justify-start px-4 py-8">
+      <div class="flex w-full max-w-screen-md flex-col items-center gap-8">
         <div class="flex w-full justify-between">
           <div>Score: {score()}</div>
           <div>Highscore: {highScore()}</div>
