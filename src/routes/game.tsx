@@ -1,4 +1,4 @@
-import { For, createSignal, onMount } from "solid-js";
+import { For, createEffect, createSignal, onMount } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { useNavigate } from "solid-start";
 import { twMerge } from "tailwind-merge";
@@ -14,6 +14,17 @@ export default function GamePage() {
   const [matched, setMatched] = createStore<boolean[]>([]);
   const [selected, setSelected] = createSignal<number | undefined>();
 
+  const [score, setScore] = createSignal<number>(0);
+  const [highScore, setHighScore] = createSignal<number>(
+    parseInt(localStorage.getItem("highScore") ?? "0"),
+  );
+  createEffect(() => {
+    if (score() > highScore()) {
+      setHighScore(score());
+      localStorage.setItem("highScore", highScore().toString());
+    }
+  });
+
   onMount(() => {
     init();
   });
@@ -23,50 +34,54 @@ export default function GamePage() {
     setMatched(Array.from(new Array(grid.length)).map(() => false));
   };
 
-  const check = (index: [number, number]): boolean => {
+  // returns 0 if no match was found, and the distance between matches if one was found
+  const check = (index: [number, number]): number => {
     index.sort((a, b) => a - b);
     // check if not already matched
     if (matched[index[0]] || matched[index[1]]) {
-      return false;
+      return 0;
     }
     // check if same or sum to 10
-    if (
-      grid[index[0]] !== grid[index[1]] &&
-      grid[index[0]] + grid[index[1]] !== 10
-    ) {
-      return false;
+    if (grid[index[0]] !== grid[index[1]] && grid[index[0]] + grid[index[1]] !== 10) {
+      return 0;
     }
 
+    let dist = 1;
     // check if all numbers between are already matched
     if (getColumn(index[0]) == getColumn(index[1])) {
       for (let i = index[0] + COLUMNS; i < index[1]; i += COLUMNS) {
-        if (i > matched.length || !matched[i]) return false;
+        if (i > matched.length || !matched[i]) return 0;
+        dist++;
       }
-      return true;
+      return dist;
     }
     if (getForwardDiagonal(index[0]) === getForwardDiagonal(index[1])) {
       for (let i = index[0] + COLUMNS + 1; i < index[1]; i += COLUMNS + 1) {
-        if (i > matched.length || !matched[i]) return false;
+        if (i > matched.length || !matched[i]) return 0;
+        dist++;
       }
-      return true;
+      return dist;
     }
     if (getBackwardDiagonal(index[0]) === getBackwardDiagonal(index[1])) {
       for (let i = index[0] + COLUMNS - 1; i < index[1]; i += COLUMNS - 1) {
-        if (i > matched.length || !matched[i]) return false;
+        if (i > matched.length || !matched[i]) return 0;
+        dist++;
       }
-      return true;
+      return dist;
     }
     for (let i = index[0] + 1; i < index[1]; i++) {
       // along row
-      if (!matched[i]) return false;
+      if (!matched[i]) return 0;
+      dist++;
     }
-    return true;
+    return dist;
   };
 
-  const match = (index: [number, number]) => {
+  const match = (index: [number, number], distance: number) => {
     setMatched(index[0], true);
     setMatched(index[1], true);
     setSelected(undefined);
+    setScore((score) => score + distance * distance);
 
     availableNumbers = grid
       .filter((_, index) => !matched[index])
@@ -99,8 +114,9 @@ export default function GamePage() {
     if (s === index) {
       setSelected(undefined);
     } else if (s !== undefined) {
-      if (check([s, index])) {
-        match([s, index]);
+      const dist = check([s, index]);
+      if (dist > 0) {
+        match([s, index], dist);
       }
     } else if (!matched[index]) {
       setSelected(index);
@@ -121,33 +137,38 @@ export default function GamePage() {
   const getBackwardDiagonal = (index: number) => index % (COLUMNS - 1);
   const getRandomNumbers = (count: number) => {
     return Array.from(new Array(count)).map(
-      () =>
-        availableNumbers[Math.floor(Math.random() * availableNumbers.length)],
+      () => availableNumbers[Math.floor(Math.random() * availableNumbers.length)],
     );
   };
 
   return (
-    <div class="flex h-full w-full select-none flex-col items-center p-4">
-      <div class="grid w-full max-w-screen-md grid-cols-9 border-2">
-        <For each={grid}>
-          {(number, index) => (
-            <div
-              class={twMerge(
-                "flex aspect-square items-center justify-center border-b border-r text-xl active:bg-gray-400",
-                selected() === index() ? "bg-gray-400" : "",
-                matched[index()] ? "text-gray-600" : "",
-              )}
-              onClick={() => onSelection(index())}
-            >
-              {number}
-            </div>
-          )}
-        </For>
-      </div>
-      <div class="mt-8">
-        <Button class="text-sm" onClick={() => onNewNumbers()}>
-          New Numbers
-        </Button>
+    <div class="flex h-full w-full select-none flex-col items-center justify-center p-4">
+      <div class="flex w-full max-w-screen-md flex-col items-center gap-4">
+        <div class="flex w-full justify-between">
+          <div>Score: {score()}</div>
+          <div>Highscore: {highScore()}</div>
+        </div>
+        <div class="grid w-full  grid-cols-9 border-2">
+          <For each={grid}>
+            {(number, index) => (
+              <div
+                class={twMerge(
+                  "flex aspect-square items-center justify-center border-b border-r text-xl active:bg-neutral-400",
+                  selected() === index() ? "bg-neutral-400" : "",
+                  matched[index()] ? "text-neutral-700" : "",
+                )}
+                onClick={() => onSelection(index())}
+              >
+                {number}
+              </div>
+            )}
+          </For>
+        </div>
+        <div>
+          <Button class="text-sm" onClick={() => onNewNumbers()}>
+            New Numbers
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ export default function MainMenu() {
 
   return (
     <main class="flex h-full w-full flex-col items-center justify-center">
-      <h1>Number Match</h1>
+      <h1 class="text-4xl lg:text-6xl">Number Match</h1>
       <nav class="mt-8 flex flex-col items-center gap-2">
         <Button class="w-80" onClick={() => navigate("/game")}>
           New Game

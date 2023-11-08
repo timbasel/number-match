@@ -6,7 +6,7 @@ export const Button: Component<ComponentProps<"button">> = (props) => {
     <button
       {...props}
       class={twMerge(
-        "flex items-center justify-center bg-white/20 p-4 hover:bg-white/25",
+        "flex items-center justify-center bg-neutral-800 p-4 hover:bg-neutral-700",
         props.class,
       )}
     />
